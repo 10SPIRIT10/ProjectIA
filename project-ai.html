@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Archi — Gestion de Projet</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;500&family=Syne:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div
+      class="drawer-overlay"
+      id="drawerOverlay"
+      onclick="closeAllDrawers()"
+    ></div>
+    <div class="shell">
+      <!-- ── Sidebar ── -->
+      <aside class="sidebar" id="navSidebar">
+        <div
+          class="sidebar-top"
+          style="
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+          "
+        >
+          <div>
+            <div class="logo">Archi <span class="logo-badge">PM</span></div>
+            <div class="logo-sub">Gestion de projet</div>
+          </div>
+          <button
+            onclick="closeAllDrawers()"
+            style="
+              background: rgba(255, 255, 255, 0.1);
+              border: none;
+              color: rgba(245, 242, 236, 0.6);
+              width: 30px;
+              height: 30px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              margin-top: 2px;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background = 'rgba(255,255,255,.2)'"
+            onmouseout="this.style.background = 'rgba(255,255,255,.1)'"
+            class="sidebar-close-btn"
+            id="sidebarCloseBtn"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="proj-list" id="projList">
+          <div class="proj-section-title">Projets actifs</div>
+          <div
+            id="projItems"
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+              color: rgba(245, 242, 236, 0.3);
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            Aucun projet.<br />Commencez ci-dessous.
+          </div>
+        </div>
+
+        <div class="sidebar-bottom">
+          <button class="new-proj-btn" onclick="startNewProject()">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Nouveau projet
+          </button>
+        </div>
+      </aside>
+
+      <!-- ── Main ── -->
+      <main class="main">
+        <!-- Mobile topbar -->
+        <div class="mob-topbar" id="mobTopbar">
+          <button
+            class="mob-icon-btn"
+            onclick="toggleNavDrawer()"
+            id="hamburgerBtn"
+            title="Menu projets"
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <span class="mob-topbar-title">Archi</span>
+          <button
+            class="mob-icon-btn chat-btn"
+            onclick="toggleChatDrawer()"
+            id="chatBtn"
+            title="Assistant IA"
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              />
+            </svg>
+          </button>
+        </div>
+        <!-- Header -->
+        <header class="main-header" id="mainHeader">
+          <div class="header-left">
+            <div>
+              <div class="header-project-name" id="headerProjName">Archi</div>
+              <div class="header-phase" id="headerPhase">
+                Gestion de projet intelligente
+              </div>
+            </div>
+          </div>
+          <div class="header-right">
+            <div
+              class="phase-progress"
+              id="headerProgress"
+              style="display: none"
+            >
+              <span id="progressLabel">0%</span>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  id="progressFill"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Phase strip -->
+        <div class="phase-strip" id="phaseStrip" style="display: none"></div>
+
+        <!-- Content area -->
+        <div class="content-area" id="contentArea" style="display: none">
+          <!-- Phase detail -->
+          <div class="phase-detail" id="phaseDetail"></div>
+
+          <!-- Chat panel -->
+          <div class="chat-panel" id="chatPanelDrawer">
+            <div
+              class="chat-header-mini"
+              style="justify-content: space-between"
+            >
+              <div style="display: flex; align-items: center; gap: 10px">
+                <div class="chat-indicator"></div>
+                <span class="chat-label">Assistant Archi · actif</span>
+              </div>
+              <button
+                onclick="closeAllDrawers()"
+                style="
+                  background: none;
+                  border: none;
+                  color: var(--muted);
+                  cursor: pointer;
+                  font-size: 20px;
+                  line-height: 1;
+                  padding: 0 2px;
+                  display: none;
+                "
+                id="chatCloseBtn"
+              >
+                ×
+              </button>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+              <div class="chat-input-wrap">
+                <textarea
+                  class="chat-textarea"
+                  id="chatInput"
+                  placeholder="Posez une question ou donnez une instruction…"
+                  rows="1"
+                ></textarea>
+                <button class="chat-send" id="sendBtn" onclick="handleSend()">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Welcome screen -->
+        <div class="welcome-state" id="welcomeState">
+          <div class="welcome-icon">⬡</div>
+          <div class="welcome-title">Bienvenue sur Archi</div>
+          <div class="welcome-sub">
+            Votre chef de projet IA. Choisissez un type de projet pour commencer
+            le suivi étape par étape.
+          </div>
+
+          <div class="type-grid">
+            <div class="type-card" onclick="selectProjectType('web')">
+              <div class="type-card-icon">🌐</div>
+              <div class="type-card-name">Projet Web</div>
+              <div class="type-card-desc">
+                Site, application web, e-commerce, refonte
+              </div>
+            </div>
+            <div class="type-card" onclick="selectProjectType('mobile')">
+              <div class="type-card-icon">📱</div>
+              <div class="type-card-name">App Mobile</div>
+              <div class="type-card-desc">
+                iOS, Android, React Native, Flutter
+              </div>
+            </div>
+            <div class="type-card" onclick="selectProjectType('marketing')">
+              <div class="type-card-icon">📣</div>
+              <div class="type-card-name">Marketing</div>
+              <div class="type-card-desc">
+                Campagne, lancement produit, branding
+              </div>
+            </div>
+            <div class="type-card" onclick="selectProjectType('event')">
+              <div class="type-card-icon">🎯</div>
+              <div class="type-card-name">Événement</div>
+              <div class="type-card-desc">
+                Conférence, salon, soirée, webinaire
+              </div>
+            </div>
+            <div class="type-card" onclick="selectProjectType('product')">
+              <div class="type-card-icon">📦</div>
+              <div class="type-card-name">Produit</div>
+              <div class="type-card-desc">
+                Conception, développement, lancement
+              </div>
+            </div>
+            <div class="type-card" onclick="selectProjectType('construction')">
+              <div class="type-card-icon">🏗</div>
+              <div class="type-card-name">Construction</div>
+              <div class="type-card-desc">
+                Bâtiment, rénovation, aménagement
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Task detail popup -->
+    <div
+      class="task-popup-overlay"
+      id="taskPopupOverlay"
+      style="display: none"
+      onclick="if (event.target === this) closeTaskPopup();"
+    >
+      <div class="task-popup" id="taskPopupContent"></div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
